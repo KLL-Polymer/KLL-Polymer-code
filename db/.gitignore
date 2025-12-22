@@ -1,0 +1,7 @@
+/.vscode
+*.txt
+*.d
+*.o
+*.out
+kll_bench
+/rocksdb
