@@ -60,18 +60,17 @@ public:
             while (array[i].size() >= max_size[i]) {
                 // group-by and sort operation
                 std::vector<std::pair<ID_TYPE, DATA_TYPE>> grouped_array;
-                std::map<ID_TYPE, std::vector<DATA_TYPE>> kv_array;
-                std::set<ID_TYPE> key_set;
+                std::unordered_map<ID_TYPE, std::vector<DATA_TYPE>> kv_array;
+                std::vector<ID_TYPE> key_order;
                 for (int j = 0; j < max_size[i]; ++j) {
-                    if (key_set.find(array[i][j].first) == key_set.end()) {
-                        key_set.insert(array[i][j].first);
-                        kv_array[array[i][j].first] = {};
+                    ID_TYPE current_key = array[i][j].first;
+                    if (kv_array.find(current_key) == kv_array.end()) {
+                        key_order.push_back(current_key);
                     }
-                    kv_array[array[i][j].first].push_back(array[i][j].second);
+                    kv_array[current_key].push_back(array[i][j].second);
                 }
-                for (auto iv : kv_array) {
-                    ID_TYPE _key = iv.first;
-                    auto vec = iv.second;
+                for (auto _key : key_order) {
+                    auto vec = kv_array[_key];
                     std::sort(vec.begin(), vec.begin() + vec.size());
                     for (auto _value : vec) {
                         grouped_array.push_back({_key, _value});
@@ -133,6 +132,10 @@ public:
                 }
             }
         }
+        if (frequency == 0) {
+            return 0;
+        }
+
         // assert(frequency == query_frequency(key));
         std::sort(value_weight_vec.begin(), value_weight_vec.end(), 
                   [](auto const& x, auto const& y) {
@@ -265,18 +268,17 @@ public:
             while (array[i].size() >= max_size[i]) {
                 // group-by and sort operation
                 std::vector<std::pair<ID_TYPE, DATA_TYPE>> grouped_array;
-                std::map<ID_TYPE, std::vector<DATA_TYPE>> kv_array;
-                std::set<ID_TYPE> key_set;
+                std::unordered_map<ID_TYPE, std::vector<DATA_TYPE>> kv_array;
+                std::vector<ID_TYPE> key_order;
                 for (int j = 0; j < max_size[i]; ++j) {
-                    if (key_set.find(array[i][j].first) == key_set.end()) {
-                        key_set.insert(array[i][j].first);
-                        kv_array[array[i][j].first] = {};
+                    ID_TYPE current_key = array[i][j].first;
+                    if (kv_array.find(current_key) == kv_array.end()) {
+                        key_order.push_back(current_key);
                     }
-                    kv_array[array[i][j].first].push_back(array[i][j].second);
+                    kv_array[current_key].push_back(array[i][j].second);
                 }
-                for (auto iv : kv_array) {
-                    ID_TYPE _key = iv.first;
-                    auto vec = iv.second;
+                for (auto _key : key_order) {
+                    auto vec = kv_array[_key];
                     std::sort(vec.begin(), vec.begin() + vec.size());
                     for (auto _value : vec) {
                         grouped_array.push_back({_key, _value});
@@ -320,11 +322,6 @@ public:
         }
     }    
 };
-
-
-
-
-
 
 
 #endif
