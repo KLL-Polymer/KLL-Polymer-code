@@ -296,19 +296,18 @@ public:
         // top level, using deterministic compaction
         for (int i = H - reservoir_level - s; i < H - reservoir_level - 1; ++i) {
             while (array[i].size() >= max_size[i]) {
-                std::map<ID_TYPE, std::vector<DATA_TYPE>> kv_array;
-                std::set<ID_TYPE> key_set;
+                std::unordered_map<ID_TYPE, std::vector<DATA_TYPE>> kv_array;
+                std::vector<ID_TYPE> key_order;
                 int promoted_items = 0;
                 for (int j = 0; j < max_size[i]; ++j) {
-                    if (key_set.find(array[i][j].first) == key_set.end()) {
-                        key_set.insert(array[i][j].first);
-                        kv_array[array[i][j].first] = {};
+                    ID_TYPE current_key = array[i][j].first;
+                    if (kv_array.find(current_key) == kv_array.end()) {
+                        key_order.push_back(current_key);
                     }
-                    kv_array[array[i][j].first].push_back(array[i][j].second);
+                    kv_array[current_key].push_back(array[i][j].second);
                 }
-                for (auto iv : kv_array) {
-                    ID_TYPE _key = iv.first;
-                    auto vec = iv.second;
+                for (auto _key : key_order) {
+                    auto vec = kv_array[_key];
                     std::sort(vec.begin(), vec.begin() + vec.size());
                     double r = static_cast<double>(std::rand()) / RAND_MAX;
                     int random_bit = r < 0.5 ? 0 : 1;
